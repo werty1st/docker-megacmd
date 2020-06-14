@@ -1,0 +1,30 @@
+version: "3.6"
+
+
+services:
+
+  megacmd:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: megacmd
+    ports: 
+      - 8081:8080
+    volumes: 
+      - config:/root/.megaCmd
+    #command: ["mega-webdav", "--public", "--port=8080", "."]
+    #command: login https://mega.nz/folder/zAB1HQgQ#rhcTNUGzSsVRgf309QoBWg
+    environment: 
+      - LOGIN=https://mega.nz/folder/zAB1HQgQ#rhcTNUGzSsVRgf309QoBWg
+      - MEGACMD=mega-webdav "/home/sync/webdav" --port=8080 --public
+
+
+volumes: 
+  config:
+
+
+# Use
+# docker-compose up -d
+# docker-compose exec megacmd mega-login
+# docker-compose exec megacmd mega-ls
+# docker-compose exec megacmd mega-webdav --public --port=8080 "The Young Pope"

@@ -1,16 +1,18 @@
-FROM debian:latest
-RUN apt-get update && apt-get install curl gnupg2 -y && \
-curl https://mega.nz/linux/MEGAsync/Debian_10.0/amd64/megacmd_1.2.0-7.1_amd64.deb --output megacmd.deb && \
-echo path-include /usr/share/doc/megacmd/* > /etc/dpkg/dpkg.cfg.d/docker && \
-apt install ./megacmd.deb -y && \
-apt-get remove -y curl && \
-apt-get clean
+FROM ubuntu:bionic
 
-COPY entrypoint.sh entrypoint.sh
+RUN apt-get update && apt-get install curl gnupg2 -y \
+    && curl https://mega.nz/linux/MEGAsync/xUbuntu_18.04/amd64/megacmd_1.2.0-10.1_amd64.deb --output /tmp/megacmd.deb \
+    && apt install /tmp/megacmd.deb -y \
+    && apt-get remove -y curl \
+    && apt-get clean \
+    && rm -rf /tmp/megacmd.deb
 
-ENV USERNAME NOBODY
-ENV PASSWORD CHANGEME
-ENV MEGACMD mega-put
+ADD entrypoint.sh /entrypoint.sh
 
-ENTRYPOINT bash ./entrypoint.sh
-CMD /bin/bash
+RUN chmod +x entrypoint.sh
+
+#ENTRYPOINT ["/bin/bash", "-c", "/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
+
+EXPOSE 8080
+VOLUME [ "/root/.megaCmd" ]
